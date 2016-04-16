@@ -10,17 +10,18 @@ App.onLaunch = function(options) {
   evaluateScripts(javascriptFiles, function(success) {
     if(success) {
       resourceLoader = new ResourceLoader(options.BASEURL);
-      resourceLoader.loadResource(`${options.BASEURL}templates/helloworld.xml.js`,
-        {
-          title: 'Landing Page',
-          items: ['item1-2', 'item2-2', 'item3-3']
-        },
-        function (resource) {
-          var doc = Presenter.makeDocument(resource);
-          doc.addEventListener("select", Presenter.load.bind(Presenter));
-          Presenter.pushDocument(doc);
-        }
-      );
+      resourceLoader.getGifs(null, function (response) {
+        resourceLoader.loadResource(`${options.BASEURL}templates/initialGifDisplay.xml.js`,
+          response.results.map(function (gif) {
+            return gif.media[0].gif.preview
+          }),
+          function (resource) {
+            var doc = Presenter.makeDocument(resource);
+            doc.addEventListener("select", Presenter.load.bind(Presenter));
+            Presenter.pushDocument(doc);
+          }
+        );
+      })
     } else {
       var errorDoc = Presenter.createAlert("Evaluate Scripts Error", "Error attempting to evaluate external JavaScript files.");
       navigationDocument.presentModal(errorDoc);

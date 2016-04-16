@@ -19,7 +19,7 @@ ResourceLoader.prototype.loadResource = function(resource, options, callback) {
 
 ResourceLoader.prototype.getGifs = function (searchTerm, callback) {
   var url = 'http://api.riffsy.com/v1/';
-  if (!searchTerm) {
+  if (searchTerm === null) {
     url += 'trending?';
   } else {
     url += 'search?tag=' + searchTerm;
