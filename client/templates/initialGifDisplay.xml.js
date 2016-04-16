@@ -1,10 +1,9 @@
-var Template = function(data) { 
+var Template = function(data) {
 
 
   var generateMediumImageLockups = function(url){
     return `<lockup>
               <img src="${url}" class="medium" />
-              <title class="scrollTextOnHighlight">Title 1</title>
     </lockup>`;
   };
 

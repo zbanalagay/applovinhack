@@ -1,18 +1,24 @@
 var Presenter = {
   load: function(event) {
-    var self = this,
-    ele = event.target,
-    videoURL = ele.getAttribute("videoURL")
-    if(videoURL) {
-      var player = new Player();
-      var playlist = new Playlist();
-      var mediaItem = new MediaItem("video", videoURL);
- 
-      player.playlist = playlist;
-      player.playlist.push(mediaItem);
-      player.present();
-    }
+    resourceLoader.getGifs('hello', function (response) {
+      console.log('response', response);
+    });
+    var self = this;
+          resourceLoader.loadResource(`${resourceLoader.BASEURL}templates/helloworld.xml.js`,
+        {
+          title: 'Yay next page!!',
+          items: ['item1', 'item2', 'item3']
+        },
+        function (resource) {
+          var doc = Presenter.makeDocument(resource);
+          doc.addEventListener("select", self.load.bind(self));
+          self.pushDocument(doc);
+        }
+      );
+
   },
+
+
 
   makeDocument: function(resource) {
     if (!Presenter.parser) {
@@ -21,11 +27,11 @@ var Presenter = {
     var doc = Presenter.parser.parseFromString(resource, "application/xml");
     return doc;
   },
-  
+
   modalDialogPresenter: function(xml) {
     navigationDocument.presentModal(xml);
   },
- 
+
   pushDocument: function(xml) {
     navigationDocument.pushDocument(xml);
   },
