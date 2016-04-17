@@ -1,26 +1,48 @@
 var Presenter = {
-  load: function(event) {
-    resourceLoader.getGifs('hello', function (response) {
-      console.log('response', response);
-    });
-    var self = this;
-          resourceLoader.loadResource(`${resourceLoader.BASEURL}templates/helloworld.xml.js`,
-        {
-          title: 'Yay next page!!',
-          items: ['item1', 'item2', 'item3']
-        },
+  load: function (event) {
+    var loadingDoc;
+    var self = this
+    var gifObj = {};
+    gifObj.url = event.target.getAttribute('url');
+    gifObj.preview = event.target.getAttribute('preview');
+    gifObj.tags = event.target.getAttribute('tags');
+    gifObj.id = event.target.getAttribute('id');
+
+
+    resourceLoader.loadResource(
+      `${resourceLoader.BASEURL}templates/loading.xml.js`,
+      'Loading...',
+      function (resource) {
+        loadingDoc = self.makeDocument(resource);
+        loadingDoc.addEventListener("select", self.load.bind(self));
+        self.pushDocument(loadingDoc);
+      }
+    );
+
+    resourceLoader.getGifs(gifObj.tags.split(',').join('+'), function (response) {
+      gifObj.related = response.results.map(function (gif) {
+        var gifObject = {
+          media: gif.media[0].gif,
+          tags: gif.tags,
+          id: gif.id
+        }
+        return gifObject
+      });
+      resourceLoader.loadResource(
+        `${resourceLoader.BASEURL}templates/relatedGifDisplay.xml.js`,
+        gifObj,
         function (resource) {
-          var doc = Presenter.makeDocument(resource);
+          var doc = self.makeDocument(resource);
           doc.addEventListener("select", self.load.bind(self));
-          self.pushDocument(doc);
+          self.replaceDocument(doc, loadingDoc);
         }
       );
-
+    })
   },
 
 
 
-  makeDocument: function(resource) {
+  makeDocument: function (resource) {
     if (!Presenter.parser) {
       Presenter.parser = new DOMParser();
     }
@@ -28,16 +50,20 @@ var Presenter = {
     return doc;
   },
 
-  modalDialogPresenter: function(xml) {
+  modalDialogPresenter: function (xml) {
     navigationDocument.presentModal(xml);
   },
 
-  pushDocument: function(xml) {
+  replaceDocument: function (newDoc, oldDoc) {
+    navigationDocument.replaceDocument(newDoc, oldDoc);
+  },
+
+  pushDocument: function (xml) {
     navigationDocument.pushDocument(xml);
   },
 
-  createAlert : function(title, description) {
-  var alertString = `<?xml version="1.0" encoding="UTF-8" ?>
+  createAlert: function (title, description) {
+    var alertString = `<?xml version="1.0" encoding="UTF-8" ?>
     <document>
       <alertTemplate>
         <title>${title}</title>

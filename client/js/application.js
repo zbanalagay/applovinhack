@@ -13,7 +13,12 @@ App.onLaunch = function(options) {
       resourceLoader.getGifs(null, function (response) {
         resourceLoader.loadResource(`${options.BASEURL}templates/initialGifDisplay.xml.js`,
           response.results.map(function (gif) {
-            return gif.media[0].gif.preview
+            var gifObject = {
+              media: gif.media[0].gif,
+              tags: gif.tags,
+              id: gif.id
+            }
+            return gifObject
           }),
           function (resource) {
             var doc = Presenter.makeDocument(resource);

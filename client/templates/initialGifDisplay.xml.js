@@ -1,9 +1,12 @@
 var Template = function(data) {
 
 
-  var generateMediumImageLockups = function(url){
-    return `<lockup>
-              <img src="${url}" class="medium" />
+  var generateMediumImageLockups = function(data){
+    var tags = data.tags.reduce(function (allTags, tag) {
+      return allTags === '' ?  tag : allTags + ',' + tag
+    }, '')
+    return `<lockup url="${data.media.url}" preview="${data.media.preview}" tags="${tags}" id="${data.id}">
+              <img src="${data.media.preview}" class="medium" />
     </lockup>`;
   };
 
