@@ -1,4 +1,5 @@
 var resourceLoader;
+var digits;
 
 App.onLaunch = function(options) {
   var javascriptFiles = [
@@ -10,6 +11,9 @@ App.onLaunch = function(options) {
   evaluateScripts(javascriptFiles, function(success) {
     if(success) {
       resourceLoader = new ResourceLoader(options.BASEURL);
+      digits = resourceLoader.returnDigits(null, function(response) {
+        return response;
+      });
       resourceLoader.getGifs(null, function (response) {
         resourceLoader.loadResource(`${options.BASEURL}templates/initialGifDisplay.xml.js`,
           response.results.map(function (gif) {
